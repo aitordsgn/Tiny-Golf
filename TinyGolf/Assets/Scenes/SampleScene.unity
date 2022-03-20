@@ -15377,12 +15377,12 @@ GameObject:
   - component: {fileID: 201189285}
   - component: {fileID: 201189284}
   m_Layer: 5
-  m_Name: UIMusica (1)
+  m_Name: UIAtras
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &201189283
 RectTransform:
   m_ObjectHideFlags: 0
@@ -15451,6 +15451,18 @@ MonoBehaviour:
       - m_Target: {fileID: 1189898351}
         m_TargetAssemblyTypeName: Settings, Assembly-CSharp
         m_MethodName: boton
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1189898351}
+        m_TargetAssemblyTypeName: Settings, Assembly-CSharp
+        m_MethodName: Atras
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -15698,7 +15710,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &232987092
 RectTransform:
   m_ObjectHideFlags: 0
@@ -36492,7 +36504,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 115.79999, y: -70.71411}
+  m_AnchoredPosition: {x: 87, y: -70.71411}
   m_SizeDelta: {x: 83.5644, y: 83.5644}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1189898347
@@ -36636,6 +36648,16 @@ MonoBehaviour:
   audioManager: {fileID: 1209692606}
   Sonido: {fileID: 2107148727}
   Musica: {fileID: 199311486}
+  img: {fileID: 117547706}
+  Mute: {fileID: 21300000, guid: 057956efde1012b4dab47c1787250921, type: 3}
+  NMute: {fileID: 21300000, guid: 0586134bec02db54c958b3dea24ef25c, type: 3}
+  Nmusica: {fileID: 1531168543}
+  Juego: {fileID: 1233517124}
+  JuegoUI: {fileID: 392525437}
+  Victoria: {fileID: 1188197866}
+  Menu: {fileID: 492692504}
+  BotonAtras: {fileID: 201189282}
+  pelota: {fileID: 0}
 --- !u!1 &1208644787
 GameObject:
   m_ObjectHideFlags: 0
@@ -47042,6 +47064,7 @@ MonoBehaviour:
   Juego: {fileID: 1233517124}
   JuegoUI: {fileID: 392525437}
   Principal: {fileID: 492692504}
+  BotonAtras: {fileID: 201189282}
   scroll_pos: 0
   pos: []
   Posicion: 0
@@ -50986,7 +51009,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1531168544
 RectTransform:
   m_ObjectHideFlags: 0
@@ -52040,8 +52063,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 284, y: 18}
-  m_SizeDelta: {x: 800, y: 160.7325}
+  m_AnchoredPosition: {x: 284, y: 89.83}
+  m_SizeDelta: {x: 800, y: 169.2534}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1779293168
 MonoBehaviour:
@@ -52065,8 +52088,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Survival
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 9d266f65a51094e4aa8b24f17eca4433, type: 2}
-  m_sharedMaterial: {fileID: 8052720680379440356, guid: 9d266f65a51094e4aa8b24f17eca4433,
+  m_fontAsset: {fileID: 11400000, guid: edf786ce68d71614b877919820e4e649, type: 2}
+  m_sharedMaterial: {fileID: 2613400955109487853, guid: edf786ce68d71614b877919820e4e649,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -52091,13 +52114,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 116.4
+  m_fontSize: 133.65
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 200
-  m_fontStyle: 0
+  m_fontStyle: 16
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
   m_textAlignment: 65535
@@ -52127,7 +52150,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 150, y: 0, z: 150, w: -8.612381}
+  m_margin: {x: 150, y: 0, z: 150, w: 2.0388641}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -53674,14 +53697,14 @@ MonoBehaviour:
   HoleinOne: 0
   Linea: {fileID: 1810408651}
   AgujeroCerca: {fileID: 0}
-  HolloEnUno: {fileID: 0}
+  Ancla: {fileID: 1784731420}
   Polvo: {fileID: 1221241180}
   Agujero: {fileID: 1965187863}
   Tiros: {fileID: 592093820}
   audioManager: {fileID: 1209692606}
   Ag: 0
   Suma: {fileID: 232987093}
-  StartingTime: 10
+  StartingTime: 30
   posicion: 0
   UIVictoria: {fileID: 1188197866}
   SpawnPointsObj: {fileID: 417060281}

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class Scroll : MonoBehaviour
 {
-    public GameObject scrollbar,BotonDcha,BotonIzda, Juego, JuegoUI,Principal;
+    public GameObject scrollbar,BotonDcha,BotonIzda, Juego, JuegoUI,Principal,BotonAtras;
     public float scroll_pos = 0;
     public float[] pos;
     public int Posicion;
@@ -52,6 +52,7 @@ public class Scroll : MonoBehaviour
     public void Play()
     {
         pelota.CambiarPosicion(Posicion);
+        BotonAtras.SetActive(true);
         Juego.SetActive(true);
         JuegoUI.SetActive(true);
         Principal.SetActive(false);
