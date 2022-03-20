@@ -1,2 +1,2 @@
 # Tiny-Golf
-A small mobile game I'm currently working on
+Un pequeño juego Arcade para movil
