@@ -27,7 +27,7 @@ public class AudioManager : MonoBehaviour
     }
     public void Start()
     {
-        PlayMusica("Fondo");
+        PlayMusica("FondoMenu");
     }
     public void PlaySonido(string name)
     {

@@ -11,6 +11,8 @@ public class Settings : MonoBehaviour
     [SerializeField] Sprite Mute, NMute;
     [SerializeField] GameObject Nmusica, Juego, JuegoUI, Victoria, Menu, BotonAtras;
     [SerializeField] Scr_Pelota pelota;
+    [SerializeField]
+   
     public void boton()
     {
         audioManager.PlaySonido("Boton");
@@ -41,7 +43,7 @@ public class Settings : MonoBehaviour
         Victoria.SetActive(false);
         Menu.SetActive(true);
         BotonAtras.SetActive(false);
-        pelota.Reset();
-
+        pelota.SetRecord();
+        pelota.tryAgain();
     }
 }

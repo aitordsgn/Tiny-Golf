@@ -5,7 +5,7 @@ using TMPro;
 
 public class Scr_Pelota : MonoBehaviour
 {
-    public bool aiming, ready, EnAgujero, Enhollo = false;
+    public bool aiming, ready, EnAgujero, Enhollo,Pausa;
     public Vector3 PosicionFinal, PosicionInicial, PosicionInicialDedo;
     public float DistanciaMaxima, Velocidad, VelocidadMaxima;
     public int Puntuacion, AgujeroNumero, HoleinOne;
@@ -30,8 +30,13 @@ public class Scr_Pelota : MonoBehaviour
     [SerializeField] GameObject SpawnPointsObj;
     [SerializeField] List<Vector2> SpanwPointList = new List<Vector2>();
     [SerializeField] int NumeroDeAgujeroEnLista,NumeroAnterior;
+    [SerializeField] int RecordSurvival, RecordContra;
+    [SerializeField] TextMeshProUGUI RecordContratext, RecordSurvivaltext;
+
     private void Start()
     {
+        audioManager.PlayMusica("Fondo");
+
         CurrentTime = StartingTime;
         for(int c=0;c<SpawnPointsObj.transform.childCount;c++)
         {
@@ -62,14 +67,30 @@ public class Scr_Pelota : MonoBehaviour
         }
         Agujero.text = "Hole " + AgujeroNumero.ToString();
 
-
         Debug.Log(Ag);
         if (this.GetComponent<Rigidbody2D>().velocity.magnitude <= 0.1f && EnAgujero == false)
         {
             ready = true;
-            if(posicion==0 && CurrentTime<0)
+            if (posicion == 0 && CurrentTime < 0)
             {
+                Pausa = true;
                 UIVictoria.SetActive(true);
+                if (PlayerPrefs.GetInt("RecordContra") < AgujeroNumero)
+                {
+                    PlayerPrefs.SetInt("RecordContra", AgujeroNumero);
+                    RecordContra = AgujeroNumero;
+                }
+
+            }
+            if (posicion == 1 && Puntuacion == 0)
+            {
+                Pausa = true;
+                UIVictoria.SetActive(true);
+                if (PlayerPrefs.GetInt("RecordSurvival") < AgujeroNumero)
+                {
+                    PlayerPrefs.SetInt("RecordSurvival", AgujeroNumero);
+                    RecordSurvival = AgujeroNumero;
+                }
             }
         }
         else
@@ -78,13 +99,13 @@ public class Scr_Pelota : MonoBehaviour
             //Debug.Log(this.GetComponent<Rigidbody2D>().velocity.magnitude.ToString());
         }
 
-        if(Input.GetMouseButtonDown(0) == true && !aiming && ready && Input.mousePosition.y<Ancla.transform.position.y)
+        if(Input.GetMouseButtonDown(0) == true && !aiming && ready && Input.mousePosition.y<Ancla.transform.position.y && !Pausa)
         {
             aiming = true;
             PosicionInicial = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             PosicionInicialDedo =  Camera.main.ScreenToWorldPoint(Input.mousePosition);
         }
-        if (Input.GetMouseButtonUp(0) == true && aiming && ready && Input.mousePosition.y < Ancla.transform.position.y)
+        if (Input.GetMouseButtonUp(0) == true && aiming && ready && Input.mousePosition.y < Ancla.transform.position.y && !Pausa)
         {
             PosicionFinal= Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Lanzar();
@@ -206,12 +227,16 @@ public class Scr_Pelota : MonoBehaviour
             ready = true;
             Enhollo = false;
             yield return new WaitForSeconds(0.1f);
+            this.GetComponent<TrailRenderer>().enabled = false;
+
             while (NumeroDeAgujeroEnLista == NumeroAnterior)
             {
                 NumeroDeAgujeroEnLista = Random.Range(0, SpanwPointList.Count); 
             }
             NumeroAnterior = NumeroDeAgujeroEnLista;
             this.transform.position = SpanwPointList[NumeroDeAgujeroEnLista];
+            this.GetComponent<TrailRenderer>().enabled = true;
+
             this.transform.localScale = new Vector3(0.25f, 0.25f, 1);
         }
         Suma.gameObject.SetActive(false);
@@ -228,16 +253,34 @@ public class Scr_Pelota : MonoBehaviour
         UIVictoria.SetActive(false);
         CurrentTime = StartingTime;
         Puntuacion = 10;
+        AgujeroNumero = 0;
         this.GetComponent<TrailRenderer>().enabled = false;
         this.transform.position = SpanwPointList[0];
         this.GetComponent<TrailRenderer>().enabled = true;
+        Pausa = false;
     }
-    public void Reset()
+    public void SetRecord()
     {
-        CurrentTime = StartingTime;
-        Puntuacion = 10;
-        this.GetComponent<TrailRenderer>().enabled = false;
-        this.transform.position = SpanwPointList[0];
-        this.GetComponent<TrailRenderer>().enabled = true;
+        if (posicion == 0 && CurrentTime < 0)
+        {
+            Pausa = true;
+            UIVictoria.SetActive(true);
+            if (PlayerPrefs.GetInt("RecordContra") < AgujeroNumero)
+            {
+                PlayerPrefs.SetInt("RecordContra", AgujeroNumero);
+                RecordContra = AgujeroNumero;
+            }
+
+        }
+        if (posicion == 1 && Puntuacion == 0)
+        {
+            Pausa = true;
+            UIVictoria.SetActive(true);
+            if (PlayerPrefs.GetInt("RecordSurvival") < AgujeroNumero)
+            {
+                PlayerPrefs.SetInt("RecordSurvival", AgujeroNumero);
+                RecordSurvival = AgujeroNumero;
+            }
+        }
     }
 }

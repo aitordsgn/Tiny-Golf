@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class Scroll : MonoBehaviour
 {
@@ -10,7 +11,15 @@ public class Scroll : MonoBehaviour
     public float[] pos;
     public int Posicion;
     [SerializeField] Scr_Pelota pelota;
+    [SerializeField] TextMeshProUGUI RecordContra, RecordSurv;
+    [SerializeField] PlayFabManager playFabManager;
+    [SerializeField] GameObject RankingObj;
     // Update is called once per frame
+    private void Start()
+    {
+        RecordContra.text = PlayerPrefs.GetInt("RecordContra").ToString();
+        RecordSurv.text = PlayerPrefs.GetInt("RecordSurvival").ToString();
+    }
     void Update()
     {
         if(Posicion==0)
@@ -24,6 +33,11 @@ public class Scroll : MonoBehaviour
             BotonDcha.SetActive(false);
             BotonIzda.SetActive(true);
 
+        }
+        if(Principal.active)
+        {
+            RecordContra.text = PlayerPrefs.GetInt("RecordContra").ToString();
+            RecordSurv.text = PlayerPrefs.GetInt("RecordSurvival").ToString();
         }
         
     pos = new float[transform.childCount];
@@ -56,5 +70,11 @@ public class Scroll : MonoBehaviour
         Juego.SetActive(true);
         JuegoUI.SetActive(true);
         Principal.SetActive(false);
+
+    }
+    public void Ranking()
+    {
+        playFabManager.SendLeaderboard(PlayerPrefs.GetInt("RecordContra"));
+        RankingObj.SetActive(true);
     }
 }
