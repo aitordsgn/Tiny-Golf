@@ -7,25 +7,48 @@ using TMPro;
 
 public class PlayFabManager : MonoBehaviour
 {
+    [Header("Ventanas")]
+    public GameObject nameWindow , leaderboardWindow;
+
+    [Header("Display name Window")]
+    public TextMeshProUGUI nameError;
+    public TMP_InputField nameInput;
+
+    [Header ("Leaderboard")]
     public GameObject RowPrefab;
     public Transform RowsParent;
+
     // Start is called before the first frame update
     void Start()
     {
-        Login();
+        if (PlayerPrefs.GetString("name")!=null)
+        {
+            Login(); 
+        }
     }
 
-    void Login(){
+    public void Login(){
         var request = new LoginWithCustomIDRequest
         {
             CustomId = SystemInfo.deviceUniqueIdentifier,
-            CreateAccount = true
+            CreateAccount = true,
+            InfoRequestParameters = new GetPlayerCombinedInfoRequestParams
+            {
+                GetPlayerProfile = true
+            }
         };
-        PlayFabClientAPI.LoginWithCustomID(request, OnSucces, OnError);
+        PlayFabClientAPI.LoginWithCustomID(request, OnLoginSucces, OnError);
     }
-    void OnSucces(LoginResult result)
+    void OnLoginSucces(LoginResult result)
     {
         Debug.Log("Succesful login/account create");
+        string name = null;
+        if(result.InfoResultPayload.PlayerProfile != null)
+        name = result.InfoResultPayload.PlayerProfile.DisplayName;
+        if(name== null)
+        {
+            nameWindow.SetActive(true);
+        }
     }
     void OnError(PlayFabError error)
     {
@@ -33,7 +56,7 @@ public class PlayFabManager : MonoBehaviour
         Debug.Log(error.GenerateErrorReport());
     }
 
-    public void SendLeaderboard(int Score)
+    public void SendLeaderboard(int Score ,string LeaderboardName)
     {
         var request = new UpdatePlayerStatisticsRequest
         {
@@ -41,7 +64,7 @@ public class PlayFabManager : MonoBehaviour
             {
                 new StatisticUpdate
                 {
-                    StatisticName = "Contrareloj",Value= Score
+                    StatisticName = LeaderboardName ,Value= Score
                 }
             }
         };
@@ -51,11 +74,19 @@ public class PlayFabManager : MonoBehaviour
     {
         Debug.Log("Succesfull leaderboard send");
     }
-    public void GetLeaderboard()
+    public void OpenLeaderboard()
     {
+        leaderboardWindow.SetActive(!leaderboardWindow.active);
+        GetLeaderboard("Survival");
+    }
+    public void GetLeaderboard( string LeaderboardName)
+    {
+        SendLeaderboard(PlayerPrefs.GetInt("RecordContra"), "Contrareloj");
+        SendLeaderboard(PlayerPrefs.GetInt("RecordSurvival"), "Survival");
+
         var request = new GetLeaderboardRequest
         {
-            StatisticName = "Contrareloj",
+            StatisticName = LeaderboardName,
             StartPosition = 0,
             MaxResultsCount = 10
         };
@@ -71,11 +102,47 @@ public class PlayFabManager : MonoBehaviour
         {
             GameObject newGo = Instantiate(RowPrefab,RowsParent);
             TextMeshProUGUI[] texts = newGo.GetComponentsInChildren<TextMeshProUGUI>();
-            texts[0].text = (item.Position + 1).ToString();
-            texts[1].text = item.PlayFabId;
+            texts[0].text = (item.Position + 1).ToString() + ".";
+            texts[1].text = item.DisplayName;
             texts[2].text = item.StatValue.ToString();
             
             Debug.Log(item.Position + " " + item.PlayFabId + " " + item.StatValue);
         }
+    }
+    public void SubmitNameButton()
+    {
+        if (nameInput.text !="" || nameInput.text.Length <= 10)
+        {
+            var request = new UpdateUserTitleDisplayNameRequest
+        {
+        
+            DisplayName = nameInput.text,
+            
+	           
+        };
+        
+        PlayFabClientAPI.UpdateUserTitleDisplayName(request, OnDisplayNameUpdate, OnError);
+        PlayerPrefs.SetString("name",nameInput.text.ToString());
+            nameWindow.SetActive(false);
+        }
+        else
+        {
+            if(nameInput.text =="")
+            {
+                nameError.gameObject.SetActive(true);
+                nameError.text = "Your nickname can't be empty";
+            }
+            if (nameInput.text.Length > 10)
+            {
+                nameError.gameObject.SetActive(true);
+                nameError.text = "Your nickname is too long";
+            }
+        }
+    }
+    void OnDisplayNameUpdate(UpdateUserTitleDisplayNameResult result)
+    {
+        Debug.Log("Updated display name!");
+        nameWindow.SetActive(false);
+        leaderboardWindow.SetActive(true);
     }
 }

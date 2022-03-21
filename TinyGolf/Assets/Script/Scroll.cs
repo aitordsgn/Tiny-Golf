@@ -70,11 +70,7 @@ public class Scroll : MonoBehaviour
         Juego.SetActive(true);
         JuegoUI.SetActive(true);
         Principal.SetActive(false);
-
+        RankingObj.SetActive(false);
     }
-    public void Ranking()
-    {
-        playFabManager.SendLeaderboard(PlayerPrefs.GetInt("RecordContra"));
-        RankingObj.SetActive(true);
-    }
+   
 }

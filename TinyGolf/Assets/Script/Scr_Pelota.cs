@@ -15,27 +15,33 @@ public class Scr_Pelota : MonoBehaviour
     public AudioManager audioManager;
     public string Ag="0";
 
-    //Variables Survival
+    [Header("Survival")]
     private int NumeroAleatorioSuma; // Numero que se suma
     public TextMeshProUGUI Suma; // Texto que enseña la suma
 
-    // Variables Contrareloj
-    
+    [Header("Contrareloj")]
+
     float CurrentTime = 0f;
-    [SerializeField] float StartingTime = 10f;
+    [SerializeField] float StartingTime = 30f;
+    [SerializeField] float AnuncioTime = 20f;
     [SerializeField] int posicion;
 
-    //UI Victoria
-    [SerializeField] GameObject UIVictoria;
+    [Header("UI")]
+    [SerializeField] GameObject UIVictoria, NewHigScore;
+    [SerializeField] TextMeshProUGUI UIAnuncio,UIPuntos;
     [SerializeField] GameObject SpawnPointsObj;
     [SerializeField] List<Vector2> SpanwPointList = new List<Vector2>();
     [SerializeField] int NumeroDeAgujeroEnLista,NumeroAnterior;
     [SerializeField] int RecordSurvival, RecordContra;
-    [SerializeField] TextMeshProUGUI RecordContratext, RecordSurvivaltext;
+    [SerializeField] TextMeshProUGUI RecordContratext, RecordSurvivaltext, TextoAyuda;
+    [SerializeField] PlayFabManager playFabManager;
+    [SerializeField] string[] Frases;
+    [SerializeField] bool enseñado;
+
 
     private void Start()
     {
-        audioManager.PlayMusica("Fondo");
+        audioManager.PlayMusica("Fondo2");
 
         CurrentTime = StartingTime;
         for(int c=0;c<SpawnPointsObj.transform.childCount;c++)
@@ -50,11 +56,13 @@ public class Scr_Pelota : MonoBehaviour
         //Modo Survival
         if(posicion==1)
         {
+            UIAnuncio.text = "+3 Shoots";
             Tiros.text = Puntuacion.ToString();
         }
         //Modo Contrareloj
         if(posicion==0)
         {
+            UIAnuncio.text = "+20s";
             if (CurrentTime>0)
             {
                 CurrentTime -= Time.deltaTime;
@@ -66,9 +74,9 @@ public class Scr_Pelota : MonoBehaviour
             }
         }
         Agujero.text = "Hole " + AgujeroNumero.ToString();
-
+        UIPuntos.text = AgujeroNumero.ToString() + " holes";
         Debug.Log(Ag);
-        if (this.GetComponent<Rigidbody2D>().velocity.magnitude <= 0.1f && EnAgujero == false)
+        if (this.GetComponent<Rigidbody2D>().velocity.magnitude <= 0.05f && EnAgujero == false)
         {
             ready = true;
             if (posicion == 0 && CurrentTime < 0)
@@ -77,8 +85,27 @@ public class Scr_Pelota : MonoBehaviour
                 UIVictoria.SetActive(true);
                 if (PlayerPrefs.GetInt("RecordContra") < AgujeroNumero)
                 {
+                    if (!enseñado)
+                    {
+                        NewHigScore.SetActive(true);
+                        TextoAyuda.gameObject.SetActive(false);
+                        TextoAyuda.text = Frases[Random.Range(0, Frases.Length)];
+                        enseñado = true;
+                    }
+
                     PlayerPrefs.SetInt("RecordContra", AgujeroNumero);
                     RecordContra = AgujeroNumero;
+                    playFabManager.SendLeaderboard(AgujeroNumero, "Contrareloj");
+                }
+                else
+                {
+                    if (!enseñado)
+                    {
+                        NewHigScore.SetActive(false);
+                        TextoAyuda.gameObject.SetActive(true);
+                        TextoAyuda.text = Frases[Random.Range(0, Frases.Length)];
+                        enseñado = true;
+                    }
                 }
 
             }
@@ -88,8 +115,26 @@ public class Scr_Pelota : MonoBehaviour
                 UIVictoria.SetActive(true);
                 if (PlayerPrefs.GetInt("RecordSurvival") < AgujeroNumero)
                 {
+                    if (!enseñado)
+                    {
+                        NewHigScore.SetActive(true);
+                        TextoAyuda.gameObject.SetActive(false);
+                        TextoAyuda.text = Frases[Random.Range(0, Frases.Length)];
+                        enseñado = true;
+                    }
                     PlayerPrefs.SetInt("RecordSurvival", AgujeroNumero);
                     RecordSurvival = AgujeroNumero;
+                    playFabManager.SendLeaderboard(AgujeroNumero, "Survival");
+                }
+                else
+                {
+                    if (!enseñado)
+                    {
+                        NewHigScore.SetActive(false);
+                        TextoAyuda.gameObject.SetActive(true);
+                        TextoAyuda.text = Frases[Random.Range(0, Frases.Length)];
+                        enseñado = true;
+                    }
                 }
             }
         }
@@ -258,6 +303,8 @@ public class Scr_Pelota : MonoBehaviour
         this.transform.position = SpanwPointList[0];
         this.GetComponent<TrailRenderer>().enabled = true;
         Pausa = false;
+        NewHigScore.SetActive(false);
+        enseñado = false;
     }
     public void SetRecord()
     {
@@ -283,4 +330,13 @@ public class Scr_Pelota : MonoBehaviour
             }
         }
     }
+    public void Anuncio()
+    {
+        CurrentTime += AnuncioTime;
+        Puntuacion += 3;
+        UIVictoria.SetActive(false);
+        NewHigScore.SetActive(false);
+        enseñado = false;
+    }
+  
 }
