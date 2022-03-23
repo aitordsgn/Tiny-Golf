@@ -17,6 +17,7 @@ public class PlayFabManager : MonoBehaviour
     [Header ("Leaderboard")]
     public GameObject RowPrefab;
     public Transform RowsParent;
+    [SerializeField] GameObject ErrorWifi;
 
     // Start is called before the first frame update
     void Start()
@@ -37,7 +38,7 @@ public class PlayFabManager : MonoBehaviour
                 GetPlayerProfile = true
             }
         };
-        PlayFabClientAPI.LoginWithCustomID(request, OnLoginSucces, OnError);
+        PlayFabClientAPI.LoginWithCustomID(request, OnLoginSucces, OnErrorName);
     }
     void OnLoginSucces(LoginResult result)
     {
@@ -50,10 +51,18 @@ public class PlayFabManager : MonoBehaviour
             nameWindow.SetActive(true);
         }
     }
+    void OnErrorName(PlayFabError error)
+    {
+        Debug.Log("Error in loggin in/creating account");
+        Debug.Log(error.GenerateErrorReport());
+        nameWindow.SetActive(false);
+    }
+
     void OnError(PlayFabError error)
     {
         Debug.Log("Error in loggin in/creating account");
         Debug.Log(error.GenerateErrorReport());
+        ErrorWifi.SetActive(true);
     }
 
     public void SendLeaderboard(int Score ,string LeaderboardName)
@@ -77,6 +86,7 @@ public class PlayFabManager : MonoBehaviour
     public void OpenLeaderboard()
     {
         leaderboardWindow.SetActive(!leaderboardWindow.active);
+        ErrorWifi.SetActive(false);
         GetLeaderboard("Survival");
     }
     public void GetLeaderboard( string LeaderboardName)
@@ -91,10 +101,11 @@ public class PlayFabManager : MonoBehaviour
             MaxResultsCount = 10
         };
         PlayFabClientAPI.GetLeaderboard(request, OnLeaderboardGet, OnError);
+        PlayFabClientAPI.GetLeaderboard(request, OnLeaderboardGet, OnError);
     }
     void OnLeaderboardGet(GetLeaderboardResult result)
     {
-        foreach(Transform item in RowsParent )
+        foreach(Transform item in RowsParent)
         {
             Destroy(item.gameObject);
         }
@@ -111,7 +122,7 @@ public class PlayFabManager : MonoBehaviour
     }
     public void SubmitNameButton()
     {
-        if (nameInput.text !="" || nameInput.text.Length <= 10)
+        if (nameInput.text !="" || nameInput.text.Length > 1 &&nameInput.text.Length <= 10)
         {
             var request = new UpdateUserTitleDisplayNameRequest
         {
@@ -127,14 +138,16 @@ public class PlayFabManager : MonoBehaviour
         }
         else
         {
-            if(nameInput.text =="")
+            if(nameInput.text =="" || nameInput.text.Length >1)
             {
                 nameError.gameObject.SetActive(true);
+                nameError.GetComponent<Animator>().SetTrigger("Show");
                 nameError.text = "Your nickname can't be empty";
             }
             if (nameInput.text.Length > 10)
             {
                 nameError.gameObject.SetActive(true);
+                nameError.GetComponent<Animator>().SetTrigger("Show");
                 nameError.text = "Your nickname is too long";
             }
         }

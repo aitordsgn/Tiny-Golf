@@ -36,8 +36,8 @@ public class Scr_Pelota : MonoBehaviour
     [SerializeField] TextMeshProUGUI RecordContratext, RecordSurvivaltext, TextoAyuda;
     [SerializeField] PlayFabManager playFabManager;
     [SerializeField] string[] Frases;
-    [SerializeField] bool enseñado;
-
+    [SerializeField] bool enseñado, anunciado;
+    [SerializeField] GameObject UIAnuncioObj, UITryAgain, UITryAgainGrande;
 
     private void Start()
     {
@@ -76,6 +76,18 @@ public class Scr_Pelota : MonoBehaviour
         Agujero.text = "Hole " + AgujeroNumero.ToString();
         UIPuntos.text = AgujeroNumero.ToString() + " holes";
         Debug.Log(Ag);
+        if(!anunciado)
+        {
+            UIAnuncioObj.SetActive(true);
+            UITryAgain.SetActive(true);
+            UITryAgainGrande.SetActive(false);
+        }
+        else
+        {
+            UIAnuncioObj.SetActive(false);
+            UITryAgain.SetActive(false);
+            UITryAgainGrande.SetActive(true);
+        }
         if (this.GetComponent<Rigidbody2D>().velocity.magnitude <= 0.05f && EnAgujero == false)
         {
             ready = true;
@@ -144,13 +156,13 @@ public class Scr_Pelota : MonoBehaviour
             //Debug.Log(this.GetComponent<Rigidbody2D>().velocity.magnitude.ToString());
         }
 
-        if(Input.GetMouseButtonDown(0) == true && !aiming && ready && Input.mousePosition.y<Ancla.transform.position.y && !Pausa)
+        if(Input.GetMouseButtonDown(0) == true && !aiming && ready && Input.mousePosition.y<Ancla.transform.position.y && !Pausa && !Enhollo)
         {
             aiming = true;
             PosicionInicial = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             PosicionInicialDedo =  Camera.main.ScreenToWorldPoint(Input.mousePosition);
         }
-        if (Input.GetMouseButtonUp(0) == true && aiming && ready && Input.mousePosition.y < Ancla.transform.position.y && !Pausa)
+        if (Input.GetMouseButtonUp(0) == true && aiming && ready && Input.mousePosition.y < Ancla.transform.position.y && !Pausa && !Enhollo)
         {
             PosicionFinal= Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Lanzar();
@@ -304,7 +316,7 @@ public class Scr_Pelota : MonoBehaviour
         this.GetComponent<TrailRenderer>().enabled = true;
         Pausa = false;
         NewHigScore.SetActive(false);
-        enseñado = false;
+        enseñado = anunciado = false;
     }
     public void SetRecord()
     {
@@ -337,6 +349,9 @@ public class Scr_Pelota : MonoBehaviour
         UIVictoria.SetActive(false);
         NewHigScore.SetActive(false);
         enseñado = false;
+        Pausa = false;
+        anunciado = true;
     }
+    
   
 }
