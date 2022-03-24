@@ -14,7 +14,7 @@ public class Scr_Pelota : MonoBehaviour
     public TextMeshProUGUI Agujero, Tiros;
     public AudioManager audioManager;
     public string Ag="0";
-
+    [SerializeField] GameObject Glow;
     [Header("Survival")]
     private int NumeroAleatorioSuma; // Numero que se suma
     public TextMeshProUGUI Suma; // Texto que enseña la suma
@@ -91,6 +91,7 @@ public class Scr_Pelota : MonoBehaviour
         if (this.GetComponent<Rigidbody2D>().velocity.magnitude <= 0.05f && EnAgujero == false)
         {
             ready = true;
+            Glow.SetActive(true);
             if (posicion == 0 && CurrentTime < 0)
             {
                 Pausa = true;
@@ -153,6 +154,7 @@ public class Scr_Pelota : MonoBehaviour
         else
         {
             ready = false;
+            Glow.SetActive(false);
             //Debug.Log(this.GetComponent<Rigidbody2D>().velocity.magnitude.ToString());
         }
 

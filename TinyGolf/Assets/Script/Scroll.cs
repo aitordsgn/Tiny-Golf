@@ -14,6 +14,7 @@ public class Scroll : MonoBehaviour
     [SerializeField] TextMeshProUGUI RecordContra, RecordSurv;
     [SerializeField] PlayFabManager playFabManager;
     [SerializeField] GameObject RankingObj;
+    [SerializeField] bool pulsado;
     // Update is called once per frame
     private void Start()
     {
@@ -22,6 +23,7 @@ public class Scroll : MonoBehaviour
     }
     void Update()
     {
+       
         if(Posicion==0)
         {
             BotonIzda.SetActive(false);
@@ -45,9 +47,11 @@ public class Scroll : MonoBehaviour
     for (int i = 0; i < pos.Length; i++)
         {
             pos[i] = distance * i;
-            if (Input.GetMouseButton(0) )
+            
+            if (Input.GetMouseButton(0))
             {
                 scroll_pos = scrollbar.GetComponent<Scrollbar>().value;
+                
             }
             else
             {
@@ -60,7 +64,9 @@ public class Scroll : MonoBehaviour
                         Posicion = j;
                     }
                 }
-            }
+            } 
+           
+            
         }
     }
     public void Play()

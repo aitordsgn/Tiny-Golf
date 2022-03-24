@@ -9,7 +9,7 @@ public class Settings : MonoBehaviour
     [SerializeField] AudioSource Sonido, Musica;
     [SerializeField] Image img;
     [SerializeField] Sprite Mute, NMute;
-    [SerializeField] GameObject Nmusica, Juego, JuegoUI, Victoria, Menu, BotonAtras,Ranking, NewHigScore;
+    [SerializeField] GameObject Nmusica, Juego, JuegoUI, Victoria, Menu, BotonAtras,Ranking, NewHigScore , InputName;
     [SerializeField] Scr_Pelota pelota;
     [SerializeField] Image TimeTrialLeaderboard, SurvivalLeaderboard;
     [SerializeField] Color MarronClaro, MarronOscuro;
@@ -91,5 +91,9 @@ public class Settings : MonoBehaviour
         TimeTrialLeaderboard.GetComponent<Button>().interactable = true;
 
 
+    }
+    public void CerrarNombre()
+    {
+        InputName.SetActive(false);
     }
 }
