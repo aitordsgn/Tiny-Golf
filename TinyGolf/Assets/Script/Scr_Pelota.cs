@@ -6,7 +6,7 @@ using TMPro;
 public class Scr_Pelota : MonoBehaviour
 {
     public bool aiming, ready, EnAgujero, Enhollo,Pausa;
-    public Vector3 PosicionFinal, PosicionInicial, PosicionInicialDedo;
+    public Vector3 PosicionFinal, PosicionInicial, PosicionFinalBola;
     public float DistanciaMaxima, Velocidad, VelocidadMaxima;
     public int Puntuacion, AgujeroNumero, HoleinOne;
     public GameObject Linea, AgujeroCerca ,Ancla;
@@ -160,7 +160,6 @@ public class Scr_Pelota : MonoBehaviour
         {
             aiming = true;
             PosicionInicial = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            PosicionInicialDedo =  Camera.main.ScreenToWorldPoint(Input.mousePosition);
         }
         if (Input.GetMouseButtonUp(0) == true && aiming && ready && Input.mousePosition.y < Ancla.transform.position.y && !Pausa && !Enhollo)
         {
@@ -173,7 +172,7 @@ public class Scr_Pelota : MonoBehaviour
             Linea.GetComponent<LineRenderer>().enabled = true;
             //Controlar posiciones
             PosicionInicial = this.transform.position;
-            Linea.GetComponent<LineRenderer>().SetPosition(0, PosicionInicial);
+            Linea.GetComponent<LineRenderer>().SetPosition(0, this.transform.position);
             
             Vector3 shootPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             shootPos.z = 0;
@@ -185,7 +184,9 @@ public class Scr_Pelota : MonoBehaviour
             if(Vector3.Distance(PosicionInicial , PosicionFinal) > DistanciaMaxima)
             {
                 Vector3 dir = PosicionFinal - PosicionInicial;
+                Debug.Log(dir.normalized);
                 PosicionFinal = this.transform.position + (dir.normalized * DistanciaMaxima);
+                
             }
             Linea.GetComponent<LineRenderer>().SetPosition(1, PosicionFinal);
 
@@ -235,6 +236,17 @@ public class Scr_Pelota : MonoBehaviour
             audioManager.PlaySonido("Hollo");
             StartCoroutine(NuevoHollo(collision.gameObject));
         }
+        
+    }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.transform.tag == "Pared")
+        {
+            Debug.Log("Pared");
+
+            audioManager.PlaySonidoN("Choque", this.GetComponent<Rigidbody2D>().velocity.magnitude/6);
+            Debug.Log(this.GetComponent<Rigidbody2D>().velocity.magnitude/6);
+        }
     }
     private void OnTriggerStay2D(Collider2D collision)
     {
@@ -254,6 +266,7 @@ public class Scr_Pelota : MonoBehaviour
     void CrearPolvo()
     {
         Polvo.Play();
+
     }
     IEnumerator NuevoHollo(GameObject objeto)
     {
@@ -264,7 +277,7 @@ public class Scr_Pelota : MonoBehaviour
         }
         else
         {
-            NumeroAleatorioSuma = Random.Range(1, 15);
+            NumeroAleatorioSuma = Random.Range(5, 15);
             CurrentTime += NumeroAleatorioSuma;
         }
         Suma.text = "+" + NumeroAleatorioSuma.ToString();

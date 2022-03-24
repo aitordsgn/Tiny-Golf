@@ -49,4 +49,13 @@ public class AudioManager : MonoBehaviour
         musica.clip = s.Clip;
         musica.Play();
     }
+    public void PlaySonidoN(string name,float volumen)
+    {
+        Sound s = Array.Find(Sounds, sound => sound.name == name);
+        if (s == null)
+        {
+            return;
+        }
+        sonido.PlayOneShot(s.Clip,volumen);
+    }
 }

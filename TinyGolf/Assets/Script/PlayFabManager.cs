@@ -18,6 +18,7 @@ public class PlayFabManager : MonoBehaviour
     public GameObject RowPrefab;
     public Transform RowsParent;
     [SerializeField] GameObject ErrorWifi;
+    [SerializeField] GameObject Load;
 
     // Start is called before the first frame update
     void Start()
@@ -119,6 +120,7 @@ public class PlayFabManager : MonoBehaviour
             
             Debug.Log(item.Position + " " + item.PlayFabId + " " + item.StatValue);
         }
+
     }
     public void SubmitNameButton()
     {
@@ -158,4 +160,5 @@ public class PlayFabManager : MonoBehaviour
         nameWindow.SetActive(false);
         leaderboardWindow.SetActive(true);
     }
+   
 }
