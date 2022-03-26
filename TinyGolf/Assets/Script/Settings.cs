@@ -96,4 +96,8 @@ public class Settings : MonoBehaviour
     {
         InputName.SetActive(false);
     }
+    public void BotonAtrasDes()
+    {
+        BotonAtras.GetComponent<Button>().interactable=!BotonAtras.GetComponent<Button>().interactable;
+    }
 }

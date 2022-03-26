@@ -15,12 +15,14 @@ public class Scr_Pelota : MonoBehaviour
     public AudioManager audioManager;
     public string Ag="0";
     [SerializeField] GameObject Glow;
+
+
     [Header("Survival")]
     private int NumeroAleatorioSuma; // Numero que se suma
+    [SerializeField] int StartingPuntuacion; // Numero que se suma
     public TextMeshProUGUI Suma; // Texto que enseña la suma
 
     [Header("Contrareloj")]
-
     float CurrentTime = 0f;
     [SerializeField] float StartingTime = 30f;
     [SerializeField] float AnuncioTime = 20f;
@@ -38,12 +40,22 @@ public class Scr_Pelota : MonoBehaviour
     [SerializeField] string[] Frases;
     [SerializeField] bool enseñado, anunciado;
     [SerializeField] GameObject UIAnuncioObj, UITryAgain, UITryAgainGrande;
+    [SerializeField] Settings Settings;
 
+    [Header ("Camara")]
+    [SerializeField] float ZoomMaximo;
+    [SerializeField] float ZoomMinimo;
+    [SerializeField] float TiempoEntreToques;
+    [SerializeField] float TiempoMaximo;
+    [SerializeField] float Incremento;
+    [SerializeField] bool Tirado;
+    
     private void Start()
     {
         audioManager.PlayMusica("Fondo2");
 
         CurrentTime = StartingTime;
+        Puntuacion = StartingPuntuacion;
         for(int c=0;c<SpawnPointsObj.transform.childCount;c++)
         {
             SpanwPointList.Add(SpawnPointsObj.transform.GetChild(c).transform.position);
@@ -53,8 +65,79 @@ public class Scr_Pelota : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(Input.touchCount ==2)
+        {
+            Touch touchZero = Input.GetTouch(0);
+            Touch touchOne = Input.GetTouch(1);
+
+            Vector2 touchZeroPrevPos = touchZero.position - touchZero.deltaPosition;
+            Vector2 touchOnePrevPos = touchOne.position - touchOne.deltaPosition;
+
+            float prevmagnitude = (touchZeroPrevPos - touchOnePrevPos).magnitude;
+            float currentMagnitude = (touchZero.position - touchOne.position).magnitude;
+
+            float difference = currentMagnitude - prevmagnitude;
+
+            Zoom(difference * 0.01f);
+            TiempoEntreToques = 0;
+            Linea.GetComponent<LineRenderer>().enabled = false;
+
+        }
+
+        else
+        {
+            if(Camera.main.orthographicSize >=6)
+            {
+                Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize - Time.deltaTime * Incremento, ZoomMinimo, ZoomMaximo);
+            }
+            TiempoEntreToques += Time.deltaTime;
+            if (Input.GetMouseButtonDown(0) == true && !aiming && ready && Input.mousePosition.y < Ancla.transform.position.y && !Pausa && !Enhollo && TiempoEntreToques > TiempoMaximo && Input.touchCount != 2)
+            {
+                aiming = true;
+                PosicionInicial = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            }
+            if (Input.GetMouseButtonUp(0) == true && aiming && ready && !Pausa && !Enhollo && TiempoEntreToques > TiempoMaximo && Input.touchCount != 2)
+            {
+                PosicionFinal = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                TiempoEntreToques = 0;
+                ready = false;
+                Lanzar();
+            }
+            if (aiming && TiempoEntreToques > TiempoMaximo)
+            {
+                //Encender la  Linea
+                Linea.GetComponent<LineRenderer>().enabled = true;
+                //Controlar posiciones
+                PosicionInicial = this.transform.position;
+                Linea.GetComponent<LineRenderer>().SetPosition(0, this.transform.position);
+
+                Vector3 shootPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                shootPos.z = 0;
+                shootPos = this.transform.position + (this.transform.position - shootPos);
+                PosicionFinal = shootPos;
+
+
+                //Enseñamos la linea
+                if (Vector3.Distance(PosicionInicial, PosicionFinal) > DistanciaMaxima)
+                {
+                    Vector3 dir = PosicionFinal - PosicionInicial;
+                    Debug.Log(dir.normalized);
+                    PosicionFinal = this.transform.position + (dir.normalized * DistanciaMaxima);
+
+                }
+                Linea.GetComponent<LineRenderer>().SetPosition(1, PosicionFinal);
+
+            }
+            else
+            {
+                Linea.GetComponent<LineRenderer>().enabled = false;
+            }
+
+        }
+
+
         //Modo Survival
-        if(posicion==1)
+        if (posicion==1)
         {
             UIAnuncio.text = "+3 Shoots";
             Tiros.text = Puntuacion.ToString();
@@ -94,59 +177,65 @@ public class Scr_Pelota : MonoBehaviour
             Glow.SetActive(true);
             if (posicion == 0 && CurrentTime < 0)
             {
-                Pausa = true;
-                UIVictoria.SetActive(true);
-                if (PlayerPrefs.GetInt("RecordContra") < AgujeroNumero)
+                if (this.GetComponent<Rigidbody2D>().velocity.magnitude <= 0f && EnAgujero == false)
                 {
-                    if (!enseñado)
+                    Pausa = true;
+                    UIVictoria.SetActive(true);
+                    if (PlayerPrefs.GetInt("RecordContra") < AgujeroNumero)
                     {
-                        NewHigScore.SetActive(true);
-                        TextoAyuda.gameObject.SetActive(false);
-                        TextoAyuda.text = Frases[Random.Range(0, Frases.Length)];
-                        enseñado = true;
-                    }
+                        if (!enseñado)
+                        {
+                            NewHigScore.SetActive(true);
+                            TextoAyuda.gameObject.SetActive(false);
+                            TextoAyuda.text = Frases[Random.Range(0, Frases.Length)];
+                            enseñado = true;
+                        }
 
-                    PlayerPrefs.SetInt("RecordContra", AgujeroNumero);
-                    RecordContra = AgujeroNumero;
-                    playFabManager.SendLeaderboard(AgujeroNumero, "Contrareloj");
-                }
-                else
-                {
-                    if (!enseñado)
-                    {
-                        NewHigScore.SetActive(false);
-                        TextoAyuda.gameObject.SetActive(true);
-                        TextoAyuda.text = Frases[Random.Range(0, Frases.Length)];
-                        enseñado = true;
+                        PlayerPrefs.SetInt("RecordContra", AgujeroNumero);
+                        RecordContra = AgujeroNumero;
+                        playFabManager.SendLeaderboard(AgujeroNumero, "Contrareloj");
                     }
+                    else
+                    {
+                        if (!enseñado)
+                        {
+                            NewHigScore.SetActive(false);
+                            TextoAyuda.gameObject.SetActive(true);
+                            TextoAyuda.text = Frases[Random.Range(0, Frases.Length)];
+                            enseñado = true;
+                        }
+                    } 
                 }
 
             }
-            if (posicion == 1 && Puntuacion == 0)
+            if (posicion == 1 && Puntuacion == 0 && ready && !Tirado)
             {
-                Pausa = true;
-                UIVictoria.SetActive(true);
-                if (PlayerPrefs.GetInt("RecordSurvival") < AgujeroNumero)
+                if (this.GetComponent<Rigidbody2D>().velocity.magnitude <= 0f && EnAgujero == false)
                 {
-                    if (!enseñado)
+                    Pausa = true;
+                    UIVictoria.SetActive(true);
+                    if (PlayerPrefs.GetInt("RecordSurvival") < AgujeroNumero)
                     {
-                        NewHigScore.SetActive(true);
-                        TextoAyuda.gameObject.SetActive(false);
-                        TextoAyuda.text = Frases[Random.Range(0, Frases.Length)];
-                        enseñado = true;
+                        if (!enseñado)
+                        {
+                            NewHigScore.SetActive(true);
+                            TextoAyuda.gameObject.SetActive(false);
+                            TextoAyuda.text = Frases[Random.Range(0, Frases.Length)];
+                            enseñado = true;
+                        }
+                        PlayerPrefs.SetInt("RecordSurvival", AgujeroNumero);
+                        RecordSurvival = AgujeroNumero;
+                        playFabManager.SendLeaderboard(AgujeroNumero, "Survival");
                     }
-                    PlayerPrefs.SetInt("RecordSurvival", AgujeroNumero);
-                    RecordSurvival = AgujeroNumero;
-                    playFabManager.SendLeaderboard(AgujeroNumero, "Survival");
-                }
-                else
-                {
-                    if (!enseñado)
+                    else
                     {
-                        NewHigScore.SetActive(false);
-                        TextoAyuda.gameObject.SetActive(true);
-                        TextoAyuda.text = Frases[Random.Range(0, Frases.Length)];
-                        enseñado = true;
+                        if (!enseñado)
+                        {
+                            NewHigScore.SetActive(false);
+                            TextoAyuda.gameObject.SetActive(true);
+                            TextoAyuda.text = Frases[Random.Range(0, Frases.Length)];
+                            enseñado = true;
+                        }
                     }
                 }
             }
@@ -158,45 +247,6 @@ public class Scr_Pelota : MonoBehaviour
             //Debug.Log(this.GetComponent<Rigidbody2D>().velocity.magnitude.ToString());
         }
 
-        if(Input.GetMouseButtonDown(0) == true && !aiming && ready && Input.mousePosition.y<Ancla.transform.position.y && !Pausa && !Enhollo)
-        {
-            aiming = true;
-            PosicionInicial = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        }
-        if (Input.GetMouseButtonUp(0) == true && aiming && ready && Input.mousePosition.y < Ancla.transform.position.y && !Pausa && !Enhollo)
-        {
-            PosicionFinal= Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Lanzar();
-        }
-        if(aiming)
-        {
-            //Encender la  Linea
-            Linea.GetComponent<LineRenderer>().enabled = true;
-            //Controlar posiciones
-            PosicionInicial = this.transform.position;
-            Linea.GetComponent<LineRenderer>().SetPosition(0, this.transform.position);
-            
-            Vector3 shootPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            shootPos.z = 0;
-            shootPos = this.transform.position + (this.transform.position - shootPos);
-            PosicionFinal = shootPos;
-            
-           
-            //Enseñamos la linea
-            if(Vector3.Distance(PosicionInicial , PosicionFinal) > DistanciaMaxima)
-            {
-                Vector3 dir = PosicionFinal - PosicionInicial;
-                Debug.Log(dir.normalized);
-                PosicionFinal = this.transform.position + (dir.normalized * DistanciaMaxima);
-                
-            }
-            Linea.GetComponent<LineRenderer>().SetPosition(1, PosicionFinal);
-
-        }
-        else
-        {
-            Linea.GetComponent<LineRenderer>().enabled = false;
-        }
         
         if(AgujeroCerca != null)
         {
@@ -209,8 +259,9 @@ public class Scr_Pelota : MonoBehaviour
     }
     void Lanzar()
     {
+        Tirado = true;
+        ready = false;
         aiming = false; //No dejamos apuntar al jugador
-        Puntuacion--; //Restamos una unidad a la puntuacion
         audioManager.PlaySonido("Tiro"); 
         if(Puntuacion == 0) //Te quedas sin lanzamientos posibles
         {
@@ -224,6 +275,8 @@ public class Scr_Pelota : MonoBehaviour
         Vector2 Direccion = PosicionInicial - PosicionFinal;
         CrearPolvo();
         this.GetComponent<Rigidbody2D>().AddForce(Direccion * Velocidad);
+        Puntuacion--; //Restamos una unidad a la puntuacion
+        Tirado = false;
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -272,6 +325,7 @@ public class Scr_Pelota : MonoBehaviour
     }
     IEnumerator NuevoHollo(GameObject objeto)
     {
+        Settings.BotonAtrasDes();
         if (posicion==1)
         {
             NumeroAleatorioSuma = Random.Range(1, 4);
@@ -314,7 +368,7 @@ public class Scr_Pelota : MonoBehaviour
         Suma.gameObject.SetActive(false);
         this.GetComponent<TrailRenderer>().enabled = true;
 
-
+        Settings.BotonAtrasDes();
     }
     public void CambiarPosicion(int p)
     {
@@ -322,16 +376,18 @@ public class Scr_Pelota : MonoBehaviour
     }
     public void tryAgain()
     {
+        StopAllCoroutines();
+        Enhollo = false;
         UIVictoria.SetActive(false);
         CurrentTime = StartingTime;
-        Puntuacion = 10;
+        Puntuacion = StartingPuntuacion;
         AgujeroNumero = 0;
-        this.GetComponent<TrailRenderer>().enabled = false;
-        this.transform.position = SpanwPointList[0];
-        this.GetComponent<TrailRenderer>().enabled = true;
         Pausa = false;
         NewHigScore.SetActive(false);
         enseñado = anunciado = false;
+        this.GetComponent<TrailRenderer>().enabled = false;
+        this.transform.position = SpanwPointList[0];
+        this.GetComponent<TrailRenderer>().enabled = true;
     }
     public void SetRecord()
     {
@@ -367,6 +423,11 @@ public class Scr_Pelota : MonoBehaviour
         Pausa = false;
         anunciado = true;
     }
-    
+    void Zoom(float increment)
+    {
+       
+            Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize - increment, ZoomMinimo, ZoomMaximo);
+        
+    }
   
 }

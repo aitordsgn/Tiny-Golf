@@ -13,7 +13,7 @@ public class Scroll : MonoBehaviour
     [SerializeField] Scr_Pelota pelota;
     [SerializeField] TextMeshProUGUI RecordContra, RecordSurv;
     [SerializeField] PlayFabManager playFabManager;
-    [SerializeField] GameObject RankingObj;
+    [SerializeField] GameObject RankingObj , Leaderboard;
     [SerializeField] bool pulsado;
     // Update is called once per frame
     private void Start()
@@ -77,6 +77,7 @@ public class Scroll : MonoBehaviour
         JuegoUI.SetActive(true);
         Principal.SetActive(false);
         RankingObj.SetActive(false);
+        Leaderboard.SetActive(false);
     }
    
 }

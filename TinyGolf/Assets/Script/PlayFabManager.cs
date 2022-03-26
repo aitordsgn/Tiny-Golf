@@ -18,7 +18,7 @@ public class PlayFabManager : MonoBehaviour
     public GameObject RowPrefab;
     public Transform RowsParent;
     [SerializeField] GameObject ErrorWifi;
-    [SerializeField] GameObject Load;
+    [SerializeField] GameObject Play;
 
     // Start is called before the first frame update
     void Start()
@@ -87,6 +87,7 @@ public class PlayFabManager : MonoBehaviour
     public void OpenLeaderboard()
     {
         leaderboardWindow.SetActive(!leaderboardWindow.active);
+        Play.SetActive(!leaderboardWindow.active);
         ErrorWifi.SetActive(false);
         GetLeaderboard("Survival");
     }
@@ -112,13 +113,16 @@ public class PlayFabManager : MonoBehaviour
         }
         foreach ( var item in result.Leaderboard)
         {
-            GameObject newGo = Instantiate(RowPrefab,RowsParent);
-            TextMeshProUGUI[] texts = newGo.GetComponentsInChildren<TextMeshProUGUI>();
-            texts[0].text = (item.Position + 1).ToString() + ".";
-            texts[1].text = item.DisplayName;
-            texts[2].text = item.StatValue.ToString();
-            
-            Debug.Log(item.Position + " " + item.PlayFabId + " " + item.StatValue);
+            if (item.StatValue!=0)
+            {
+                GameObject newGo = Instantiate(RowPrefab, RowsParent);
+                TextMeshProUGUI[] texts = newGo.GetComponentsInChildren<TextMeshProUGUI>();
+                texts[0].text = (item.Position + 1).ToString() + ".";
+                texts[1].text = item.DisplayName;
+                texts[2].text = item.StatValue.ToString();
+
+                Debug.Log(item.Position + " " + item.PlayFabId + " " + item.StatValue); 
+            }
         }
 
     }
