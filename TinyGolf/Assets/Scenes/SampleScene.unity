@@ -114586,7 +114586,7 @@ MonoBehaviour:
   audioManager: {fileID: 1209692606}
   Ag: 0
   Glow: {fileID: 2109062122}
-  StartingPuntuacion: 2
+  StartingPuntuacion: 10
   Suma: {fileID: 232987093}
   StartingTime: 40
   AnuncioTime: 20
@@ -114609,8 +114609,17 @@ MonoBehaviour:
   - You can do it better
   - Are you even trying?
   - Why are we still here?
-  - Whatching you play is a suffer
-  - Keep triying
+  - 'Watching you play is a suffering '
+  - Keep trying
+  - Dedicate yourself to something else
+  - Dedicate yourself to playing marbles
+  - That's been close.
+  - Uhhhh! So close
+  - You are fantastic
+  - You are surpassing yourself
+  - What is that shit???
+  - You're doing great
+  - Keep on it
   "ense\xF1ado": 0
   anunciado: 0
   UIAnuncioObj: {fileID: 2097266172}
@@ -115922,7 +115931,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 100
   m_Sprite: {fileID: 21300000, guid: a63a8b3a97280fd4c8964fe65cdd4438, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
