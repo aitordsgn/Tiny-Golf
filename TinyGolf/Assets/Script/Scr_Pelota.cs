@@ -23,7 +23,7 @@ public class Scr_Pelota : MonoBehaviour
     public TextMeshProUGUI Suma; // Texto que enseña la suma
 
     [Header("Contrareloj")]
-    float CurrentTime = 0f;
+    [SerializeField] float CurrentTime = 0f;
     [SerializeField] float StartingTime = 30f;
     [SerializeField] float AnuncioTime = 20f;
     [SerializeField] int posicion;
@@ -91,38 +91,86 @@ public class Scr_Pelota : MonoBehaviour
                 Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize - Time.deltaTime * Incremento, ZoomMinimo, ZoomMaximo);
             }
             TiempoEntreToques += Time.deltaTime;
-            if (Input.GetMouseButtonDown(0) == true && !aiming && ready && Input.mousePosition.y < Ancla.transform.position.y && !Pausa && !Enhollo && TiempoEntreToques > TiempoMaximo && Input.touchCount != 2)
+            /* ------------------------------------- SIN QUE SEA CENTRO-------------------------------------------------------------------------------
+             if (Input.GetMouseButtonDown(0) == true && !aiming && ready && Input.mousePosition.y < Ancla.transform.position.y && !Pausa && !Enhollo && TiempoEntreToques > TiempoMaximo && Input.touchCount != 2 && Puntuacion>0 && CurrentTime>0)
+             {
+                 aiming = true;
+                 PosicionInicial = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+             }
+             if (Input.GetMouseButtonUp(0) == true && aiming && ready && !Pausa && !Enhollo && TiempoEntreToques > TiempoMaximo && Input.touchCount != 2 && Puntuacion > 0 && CurrentTime > 0)
+             {
+                 PosicionFinal = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                 TiempoEntreToques = 0;
+                 ready = false;
+                 Lanzar();
+             }
+
+
+             if (aiming && TiempoEntreToques > TiempoMaximo)
+             {
+                 //Encender la  Linea
+                 Linea.GetComponent<LineRenderer>().enabled = true;
+                 //Controlar posiciones
+                 PosicionInicial = this.transform.position;
+                 Linea.GetComponent<LineRenderer>().SetPosition(0, this.transform.position);
+
+                 Vector3 shootPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                 shootPos.z = 0;
+                 shootPos = this.transform.position + (this.transform.position - shootPos);
+                 PosicionFinal = shootPos;
+
+
+                 //Enseñamos la linea
+                 if (Vector3.Distance(PosicionInicial, PosicionFinal) > DistanciaMaxima)
+                 {
+                     Vector3 dir = PosicionFinal - PosicionInicial;
+                     Debug.Log(dir.normalized);
+                     PosicionFinal = this.transform.position + (dir.normalized * DistanciaMaxima);
+
+                 }
+                 Linea.GetComponent<LineRenderer>().SetPosition(1, PosicionFinal);
+
+             }
+             else
+             {
+                 Linea.GetComponent<LineRenderer>().enabled = false;
+             }
+            */
+            //---------------------------------------------CUALQUIER PARTE------------------------------------------
+            if (Input.GetMouseButtonDown(0) == true && !aiming && ready && Input.mousePosition.y < Ancla.transform.position.y && !Pausa && !Enhollo && TiempoEntreToques > TiempoMaximo && Input.touchCount != 2 && Puntuacion > 0 && CurrentTime > 0)
             {
                 aiming = true;
                 PosicionInicial = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             }
-            if (Input.GetMouseButtonUp(0) == true && aiming && ready && !Pausa && !Enhollo && TiempoEntreToques > TiempoMaximo && Input.touchCount != 2)
+            if (Input.GetMouseButtonUp(0) == true && aiming && ready && !Pausa && !Enhollo && TiempoEntreToques > TiempoMaximo && Input.touchCount != 2 && Puntuacion > 0 && CurrentTime > 0)
             {
                 PosicionFinal = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                 TiempoEntreToques = 0;
                 ready = false;
                 Lanzar();
             }
+
+
             if (aiming && TiempoEntreToques > TiempoMaximo)
             {
                 //Encender la  Linea
                 Linea.GetComponent<LineRenderer>().enabled = true;
                 //Controlar posiciones
-                PosicionInicial = this.transform.position;
+                //PosicionInicial = this.transform.position;
                 Linea.GetComponent<LineRenderer>().SetPosition(0, this.transform.position);
-
+                
                 Vector3 shootPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                 shootPos.z = 0;
-                shootPos = this.transform.position + (this.transform.position - shootPos);
+                shootPos = PosicionInicial + (PosicionInicial - shootPos);
                 PosicionFinal = shootPos;
-
+                
 
                 //Enseñamos la linea
                 if (Vector3.Distance(PosicionInicial, PosicionFinal) > DistanciaMaxima)
                 {
                     Vector3 dir = PosicionFinal - PosicionInicial;
                     Debug.Log(dir.normalized);
-                    PosicionFinal = this.transform.position + (dir.normalized * DistanciaMaxima);
+                    PosicionFinal = this.transform.position + (dir.normalized* DistanciaMaxima);
 
                 }
                 Linea.GetComponent<LineRenderer>().SetPosition(1, PosicionFinal);

@@ -1,0 +1,26 @@
+A chill golf game. Compete with others.
+
+A chill arcade golf game to play on your break time. Internet connection is not necessary to play.
+Compite with others.
+Two different gamemodes.
+Time Trial mode
+Survival mode
+
+
+Un juego de golf arcade. Compite para alcanzar el Nº1.
+
+Un juego árcade de golf tranquilo para poder jugar cuando tengas un momento libre. No es necesaria la conexión a internet.
+
+Dos modos de juego diferentes, compite con tus amigos para alcanzar la primera posición en el Top 10 Mundial.
+
+- Modo Contrareloj
+- Modo Survival
+
+Un jeu d'arcade de gorlf tranquille. Rivaliser avec tes amis.
+
+Un jeu d'arcade de gorlf tranquille pour s'amuser quand tu aies un moment. 
+La connexion Internet n'est pas nécessaire. 
+
+Deux types de jeu différents dans lesquels tu pourras rivaliser avec tes amis:
+-Mode contre la montre 
+-Mode survie
