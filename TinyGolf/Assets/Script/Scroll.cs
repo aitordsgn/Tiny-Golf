@@ -6,7 +6,7 @@ using TMPro;
 
 public class Scroll : MonoBehaviour
 {
-    public GameObject scrollbar,BotonDcha,BotonIzda, Juego, JuegoUI,Principal,BotonAtras;
+    public GameObject scrollbar,BotonDcha,BotonIzda, Juego, JuegoUI,Principal,BotonAtras,BotonCerrar;
     public float scroll_pos = 0;
     public float[] pos;
     public int Posicion;
@@ -73,6 +73,7 @@ public class Scroll : MonoBehaviour
     {
         pelota.CambiarPosicion(Posicion);
         BotonAtras.SetActive(true);
+        BotonCerrar.SetActive(false);
         Juego.SetActive(true);
         JuegoUI.SetActive(true);
         Principal.SetActive(false);

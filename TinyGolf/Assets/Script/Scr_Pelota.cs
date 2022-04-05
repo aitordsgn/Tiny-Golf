@@ -46,7 +46,7 @@ public class Scr_Pelota : MonoBehaviour
     [SerializeField] float ZoomMaximo;
     [SerializeField] float ZoomMinimo;
     [SerializeField] float TiempoEntreToques;
-    [SerializeField] float TiempoMaximo;
+    [SerializeField] float TiempoMaximo,TiempoDesdeTiro;
     [SerializeField] float Incremento;
     [SerializeField] bool Tirado;
     
@@ -65,8 +65,10 @@ public class Scr_Pelota : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         if(Input.touchCount ==2)
         {
+            Debug.Log("Input 2");
             Touch touchZero = Input.GetTouch(0);
             Touch touchOne = Input.GetTouch(1);
 
@@ -81,9 +83,8 @@ public class Scr_Pelota : MonoBehaviour
             Zoom(difference * 0.01f);
             TiempoEntreToques = 0;
             Linea.GetComponent<LineRenderer>().enabled = false;
-
+            aiming = false;
         }
-
         else
         {
             if(Camera.main.orthographicSize >=6)
@@ -91,6 +92,7 @@ public class Scr_Pelota : MonoBehaviour
                 Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize - Time.deltaTime * Incremento, ZoomMinimo, ZoomMaximo);
             }
             TiempoEntreToques += Time.deltaTime;
+            TiempoDesdeTiro += Time.deltaTime;
             /* ------------------------------------- SIN QUE SEA CENTRO-------------------------------------------------------------------------------
              if (Input.GetMouseButtonDown(0) == true && !aiming && ready && Input.mousePosition.y < Ancla.transform.position.y && !Pausa && !Enhollo && TiempoEntreToques > TiempoMaximo && Input.touchCount != 2 && Puntuacion>0 && CurrentTime>0)
              {
@@ -151,8 +153,9 @@ public class Scr_Pelota : MonoBehaviour
             }
 
 
-            if (aiming && TiempoEntreToques > TiempoMaximo)
+            if (aiming)
             {
+                Debug.Log("Aiming");
                 //Encender la  Linea
                 Linea.GetComponent<LineRenderer>().enabled = true;
                 //Controlar posiciones
@@ -169,7 +172,7 @@ public class Scr_Pelota : MonoBehaviour
                 if (Vector3.Distance(PosicionInicial, PosicionFinal) > DistanciaMaxima)
                 {
                     Vector3 dir = PosicionFinal - PosicionInicial;
-                    Debug.Log(dir.normalized);
+                    //Debug.Log(dir.normalized);
                     PosicionFinal = this.transform.position + (dir.normalized* DistanciaMaxima);
 
                 }
@@ -206,7 +209,6 @@ public class Scr_Pelota : MonoBehaviour
         }
         Agujero.text = "Hole " + AgujeroNumero.ToString();
         UIPuntos.text = AgujeroNumero.ToString() + " holes";
-        Debug.Log(Ag);
         if(!anunciado)
         {
             UIAnuncioObj.SetActive(true);
@@ -223,7 +225,8 @@ public class Scr_Pelota : MonoBehaviour
         {
             ready = true;
             Glow.SetActive(true);
-            if (posicion == 0 && CurrentTime < 0)
+            Debug.Log("Ready");
+            if (posicion == 0 && CurrentTime < 0 && TiempoDesdeTiro > TiempoMaximo)
             {
                 if (this.GetComponent<Rigidbody2D>().velocity.magnitude <= 0f && EnAgujero == false)
                 {
@@ -256,10 +259,13 @@ public class Scr_Pelota : MonoBehaviour
                 }
 
             }
-            if (posicion == 1 && Puntuacion == 0 && ready && !Tirado)
+            if (posicion == 1 && Puntuacion == 0 && ready && TiempoDesdeTiro>TiempoMaximo)
             {
+                Debug.Log("Estamos mal");
                 if (this.GetComponent<Rigidbody2D>().velocity.magnitude <= 0f && EnAgujero == false)
                 {
+                    Debug.Log("Estamos parados");
+
                     Pausa = true;
                     UIVictoria.SetActive(true);
                     if (PlayerPrefs.GetInt("RecordSurvival") < AgujeroNumero)
@@ -307,7 +313,6 @@ public class Scr_Pelota : MonoBehaviour
     }
     void Lanzar()
     {
-        Tirado = true;
         ready = false;
         aiming = false; //No dejamos apuntar al jugador
         audioManager.PlaySonido("Tiro"); 
@@ -316,15 +321,16 @@ public class Scr_Pelota : MonoBehaviour
             Debug.Log("Game Over");
         }
         //Debug.Log("Apuntando a" + PosicionFinal.ToString());
-        if(Vector2.Distance(PosicionInicial, PosicionFinal) > DistanciaMaxima)
-        {
-
-        }
+        
         Vector2 Direccion = PosicionInicial - PosicionFinal;
         CrearPolvo();
         this.GetComponent<Rigidbody2D>().AddForce(Direccion * Velocidad);
-        Puntuacion--; //Restamos una unidad a la puntuacion
-        Tirado = false;
+        if (posicion==1)
+        {
+            Puntuacion--; //Restamos una unidad a la puntuacion
+
+        }        
+        TiempoDesdeTiro = 0;
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -348,7 +354,6 @@ public class Scr_Pelota : MonoBehaviour
             Debug.Log("Pared");
 
             audioManager.PlaySonidoN("Choque", this.GetComponent<Rigidbody2D>().velocity.magnitude/6);
-            Debug.Log(this.GetComponent<Rigidbody2D>().velocity.magnitude/6);
         }
     }
     private void OnTriggerStay2D(Collider2D collision)
@@ -398,7 +403,7 @@ public class Scr_Pelota : MonoBehaviour
         {
             AgujeroNumero++;
             AgujeroCerca = null;
-            ready = true;
+            ready = false;
             Enhollo = false;
             yield return new WaitForSeconds(0.1f);
             this.GetComponent<TrailRenderer>().enabled = false;

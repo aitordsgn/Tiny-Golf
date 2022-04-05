@@ -9,10 +9,11 @@ public class Settings : MonoBehaviour
     [SerializeField] AudioSource Sonido, Musica;
     [SerializeField] Image img;
     [SerializeField] Sprite Mute, NMute;
-    [SerializeField] GameObject Nmusica, Juego, JuegoUI, Victoria, Menu, BotonAtras,Ranking, NewHigScore , InputName;
+    [SerializeField] GameObject Nmusica, Juego, JuegoUI, Victoria, Menu, BotonAtras,Ranking, NewHigScore , InputName, BotonNombre,BotonCerrar;
     [SerializeField] Scr_Pelota pelota;
     [SerializeField] Image TimeTrialLeaderboard, SurvivalLeaderboard;
     [SerializeField] Color MarronClaro, MarronOscuro;
+    [SerializeField] Animator Animador;
     private void Start()
     {
         if (PlayerPrefs.GetInt("Sonido")==1)
@@ -70,6 +71,7 @@ public class Settings : MonoBehaviour
         Menu.SetActive(true);
         Ranking.SetActive(true);
         BotonAtras.SetActive(false);
+        BotonCerrar.SetActive(true);
         NewHigScore.SetActive(false);
         pelota.SetRecord();
         pelota.tryAgain();
@@ -99,5 +101,12 @@ public class Settings : MonoBehaviour
     public void BotonAtrasDes()
     {
         BotonAtras.GetComponent<Button>().interactable=!BotonAtras.GetComponent<Button>().interactable;
+    }
+    public void Cerrar()
+    {
+        #if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+        #endif
+                Application.Quit();
     }
 }
